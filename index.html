@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQL Concepts — Interactive Lesson</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f1117;
+  --bg2: #161b27;
+  --bg3: #1e2535;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.14);
+  --text: #e8eaf0;
+  --text2: #8b90a0;
+  --text3: #555b6e;
+  --blue: #4f9eff;
+  --blue-bg: rgba(79,158,255,0.12);
+  --blue-text: #93c5fd;
+  --green: #34d399;
+  --green-bg: rgba(52,211,153,0.12);
+  --green-text: #6ee7b7;
+  --amber: #fbbf24;
+  --amber-bg: rgba(251,191,36,0.12);
+  --amber-text: #fde68a;
+  --red: #f87171;
+  --red-bg: rgba(248,113,113,0.12);
+  --red-text: #fca5a5;
+  --kw: #7dd3fc;
+  --radius: 10px;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'DM Sans', sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;min-height:100vh;line-height:1.6}
+ 
+header{padding:32px 40px 0;max-width:860px;margin:0 auto}
+.logo{display:flex;align-items:center;gap:10px;margin-bottom:28px}
+.logo-icon{width:32px;height:32px;background:var(--blue-bg);border:0.5px solid rgba(79,158,255,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;color:var(--blue);font-weight:500}
+.logo-text{font-size:13px;color:var(--text2);font-weight:500;letter-spacing:.03em}
+h1{font-size:26px;font-weight:500;color:var(--text);margin-bottom:6px}
+.hero-sub{font-size:14px;color:var(--text2);margin-bottom:32px}
+ 
+.main{max-width:860px;margin:0 auto;padding:0 40px 60px}
+ 
+.top-nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+.tnb{padding:7px 18px;border-radius:20px;border:0.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-size:13px;font-family:var(--mono);transition:all .15s;letter-spacing:.01em}
+.tnb:hover{background:var(--bg3);color:var(--text)}
+.tnb.active{background:var(--blue-bg);color:var(--blue);border-color:rgba(79,158,255,0.3);font-weight:500}
+ 
+.section{display:none}.section.active{display:block}
+ 
+.card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:16px}
+.stitle{font-size:18px;font-weight:500;color:var(--text);margin-bottom:6px}
+.sdesc{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:20px}
+ 
+.sub-nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.snb{padding:5px 14px;border-radius:6px;border:0.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-size:12px;font-family:var(--mono);transition:all .15s}
+.snb:hover{background:var(--bg3);color:var(--text)}
+.snb.active{background:var(--amber-bg);color:var(--amber);border-color:rgba(251,191,36,0.3);font-weight:500}
+.subpanel{display:none}.subpanel.active{display:block}
+ 
+.tbls{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:20px}
+.tw{flex:1;min-width:160px}
+.tlabel{font-size:11px;font-weight:500;color:var(--text3);font-family:var(--mono);margin-bottom:6px;letter-spacing:.08em;text-transform:uppercase}
+.tlabel.blue{color:var(--blue)}
+ 
+table.t{width:100%;border-collapse:collapse;font-size:13px;font-family:var(--mono)}
+table.t th{background:var(--bg3);padding:8px 12px;text-align:left;font-weight:500;font-size:11px;border:0.5px solid var(--border);color:var(--text3);letter-spacing:.04em;text-transform:uppercase}
+table.t td{padding:7px 12px;border:0.5px solid var(--border);color:var(--text)}
+table.t tr.r-blue td{background:var(--blue-bg);color:var(--blue-text)}
+table.t tr.r-green td{background:var(--green-bg);color:var(--green-text)}
+table.t tr.r-amber td{background:var(--amber-bg);color:var(--amber-text)}
+table.t tr.r-red td{background:var(--red-bg);color:var(--red-text)}
+table.t tr.r-dim td{opacity:.22}
+td.null-val{font-style:italic;color:var(--text3)}
+ 
+.view-outline{outline:1px solid rgba(79,158,255,0.4);border-radius:6px;overflow:hidden}
+ 
+.code{background:var(--bg);border:0.5px solid var(--border2);border-radius:8px;padding:16px 18px;font-family:var(--mono);font-size:13px;line-height:1.8;white-space:pre;overflow-x:auto;margin-bottom:14px;color:var(--text)}
+.kw{color:var(--kw);font-weight:500}
+.cmt{color:var(--text3)}
+ 
+.rlabel{font-size:12px;color:var(--text2);margin-bottom:8px;font-weight:500}
+.row{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
+.arr-mid{display:flex;align-items:center;padding-top:32px;font-size:18px;color:var(--text3)}
+ 
+.tip{background:var(--bg);border-left:2px solid rgba(79,158,255,0.5);border-radius:0 8px 8px 0;padding:12px 16px;font-size:13px;color:var(--text2);line-height:1.65;margin-top:14px}
+.tip strong{color:var(--text);font-weight:500}
+ 
+.metric-row{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap}
+.metric{background:var(--bg);border:0.5px solid var(--border);border-radius:8px;padding:12px 22px;text-align:center}
+.metric .n{font-size:30px;font-weight:500;color:var(--text);font-family:var(--mono)}
+.metric .l{font-size:11px;color:var(--text2);margin-top:2px;letter-spacing:.03em}
+.metric.m-blue{border-color:rgba(79,158,255,0.3);background:var(--blue-bg)}.metric.m-blue .n{color:var(--blue)}
+.metric.m-green{border-color:rgba(52,211,153,0.3);background:var(--green-bg)}.metric.m-green .n{color:var(--green)}
+ 
+.venn-row{display:flex;align-items:center;gap:14px;margin-bottom:14px;flex-wrap:wrap}
+.vdesc{font-size:13px;color:var(--text2);line-height:1.65;flex:1;min-width:160px}
+.vdesc strong{color:var(--text);font-weight:500}
+ 
+footer{text-align:center;padding:24px;font-size:12px;color:var(--text3);font-family:var(--mono)}
+</style>
+</head>
+<body>
+ 
+<header>
+  <div class="logo">
+    <div class="logo-icon">SQL</div>
+    <span class="logo-text">Interactive lesson</span>
+  </div>
+  <h1>SQL concepts</h1>
+  <p class="hero-sub">SELECT · WHERE · COUNT · GROUP BY · JOINs · VIEW — click to explore each one.</p>
+</header>
+ 
+<div class="main">
+  <div class="top-nav" id="topnav">
+    <button class="tnb active" data-target="sec-select">SELECT</button>
+    <button class="tnb" data-target="sec-where">WHERE &amp; COUNT</button>
+    <button class="tnb" data-target="sec-group">GROUP BY</button>
+    <button class="tnb" data-target="sec-joins">JOINs</button>
+    <button class="tnb" data-target="sec-view">VIEW</button>
+  </div>
+ 
+  <div id="sec-select" class="section active">
+    <div class="card">
+      <div class="stitle">SELECT — pick your columns</div>
+      <div class="sdesc">SELECT tells SQL which columns to return. Use <code style="font-family:var(--mono);color:var(--blue)">*</code> for all columns, or list specific ones by name.</div>
+      <div class="tbls">
+        <div class="tw">
+          <div class="tlabel">employees</div>
+          <table class="t">
+            <tr><th>id</th><th>name</th><th>dept</th><th>salary</th></tr>
+            <tr><td>1</td><td>Alice</td><td>IT</td><td>5000</td></tr>
+            <tr><td>2</td><td>Bob</td><td>HR</td><td>4500</td></tr>
+            <tr><td>3</td><td>Carol</td><td>IT</td><td>6000</td></tr>
+            <tr><td>4</td><td>Dan</td><td>Finance</td><td>5500</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="sub-nav" id="nav-select">
+        <button class="snb active" data-target="sel-1">All columns</button>
+        <button class="snb" data-target="sel-2">Specific columns</button>
+        <button class="snb" data-target="sel-3">Computed column</button>
+      </div>
+      <div id="sel-1" class="subpanel active">
+        <div class="code"><span class="kw">SELECT</span> * <span class="kw">FROM</span> employees;</div>
+        <div class="rlabel">Returns every row and every column — the full table above.</div>
+      </div>
+      <div id="sel-2" class="subpanel">
+        <div class="code"><span class="kw">SELECT</span> name, salary <span class="kw">FROM</span> employees;</div>
+        <div class="rlabel">Result — only two columns:</div>
+        <table class="t" style="max-width:200px">
+          <tr><th>name</th><th>salary</th></tr>
+          <tr><td>Alice</td><td>5000</td></tr>
+          <tr><td>Bob</td><td>4500</td></tr>
+          <tr><td>Carol</td><td>6000</td></tr>
+          <tr><td>Dan</td><td>5500</td></tr>
+        </table>
+      </div>
+      <div id="sel-3" class="subpanel">
+        <div class="code"><span class="kw">SELECT</span> name, salary * 12 <span class="kw">AS</span> annual_salary
+<span class="kw">FROM</span> employees;</div>
+        <div class="rlabel">Result — a new computed column:</div>
+        <table class="t" style="max-width:260px">
+          <tr><th>name</th><th>annual_salary</th></tr>
+          <tr><td>Alice</td><td>60000</td></tr>
+          <tr><td>Bob</td><td>54000</td></tr>
+          <tr><td>Carol</td><td>72000</td></tr>
+          <tr><td>Dan</td><td>66000</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+ 
+  <div id="sec-where" class="section">
+    <div class="card">
+      <div class="stitle">WHERE &amp; COUNT — filter rows, count results</div>
+      <div class="sdesc">WHERE keeps only rows that satisfy a condition. COUNT(*) counts how many rows come back.</div>
+      <div class="sub-nav" id="nav-where">
+        <button class="snb active" data-target="wh-1">Basic WHERE</button>
+        <button class="snb" data-target="wh-2">AND / OR</button>
+        <button class="snb" data-target="wh-3">COUNT</button>
+      </div>
+      <div id="wh-1" class="subpanel active">
+        <div class="code"><span class="kw">SELECT</span> * <span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> salary &gt; 5000;</div>
+        <div class="rlabel">Green rows pass — dimmed rows are excluded:</div>
+        <table class="t" style="max-width:320px">
+          <tr><th>id</th><th>name</th><th>dept</th><th>salary</th></tr>
+          <tr class="r-dim"><td>1</td><td>Alice</td><td>IT</td><td>5000</td></tr>
+          <tr class="r-dim"><td>2</td><td>Bob</td><td>HR</td><td>4500</td></tr>
+          <tr class="r-green"><td>3</td><td>Carol</td><td>IT</td><td>6000</td></tr>
+          <tr class="r-green"><td>4</td><td>Dan</td><td>Finance</td><td>5500</td></tr>
+        </table>
+      </div>
+      <div id="wh-2" class="subpanel">
+        <div class="code"><span class="kw">SELECT</span> * <span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> dept = 'IT' <span class="kw">AND</span> salary &gt;= 5000;</div>
+        <div class="rlabel">Both conditions must be true:</div>
+        <table class="t" style="max-width:320px">
+          <tr><th>id</th><th>name</th><th>dept</th><th>salary</th></tr>
+          <tr class="r-green"><td>1</td><td>Alice</td><td>IT</td><td>5000</td></tr>
+          <tr class="r-dim"><td>2</td><td>Bob</td><td>HR</td><td>4500</td></tr>
+          <tr class="r-green"><td>3</td><td>Carol</td><td>IT</td><td>6000</td></tr>
+          <tr class="r-dim"><td>4</td><td>Dan</td><td>Finance</td><td>5500</td></tr>
+        </table>
+        <div class="tip"><strong>OR</strong> — at least one condition must be true:<br><code style="font-family:var(--mono);font-size:12px;color:var(--blue)">WHERE dept = 'IT' OR dept = 'HR'</code> returns Alice, Bob, Carol.</div>
+      </div>
+      <div id="wh-3" class="subpanel">
+        <div class="code"><span class="kw">SELECT COUNT</span>(*) <span class="kw">FROM</span> employees;
+<span class="kw">SELECT COUNT</span>(*) <span class="kw">FROM</span> employees <span class="kw">WHERE</span> dept = 'IT';</div>
+        <div class="metric-row">
+          <div class="metric"><div class="n">4</div><div class="l">all employees</div></div>
+          <div class="metric m-blue"><div class="n">2</div><div class="l">in IT</div></div>
+        </div>
+        <div class="tip"><strong>Other aggregates:</strong> SUM(salary) · AVG(salary) · MIN(salary) · MAX(salary)</div>
+      </div>
+    </div>
+  </div>
+ 
+  <div id="sec-group" class="section">
+    <div class="card">
+      <div class="stitle">GROUP BY — collapse and summarize</div>
+      <div class="sdesc">GROUP BY collapses rows that share the same value into one group, then runs aggregate functions on each group.</div>
+      <div class="row">
+        <div class="tw">
+          <div class="tlabel">before grouping</div>
+          <table class="t">
+            <tr><th>name</th><th>dept</th><th>salary</th></tr>
+            <tr class="r-blue"><td>Alice</td><td>IT</td><td>5000</td></tr>
+            <tr class="r-green"><td>Bob</td><td>HR</td><td>4500</td></tr>
+            <tr class="r-blue"><td>Carol</td><td>IT</td><td>6000</td></tr>
+            <tr class="r-amber"><td>Dan</td><td>Finance</td><td>5500</td></tr>
+          </table>
+        </div>
+        <div class="arr-mid">&#8594;</div>
+        <div class="tw">
+          <div class="tlabel">after GROUP BY dept</div>
+          <table class="t">
+            <tr><th>dept</th><th>count</th><th>avg salary</th></tr>
+            <tr class="r-blue"><td>IT</td><td>2</td><td>5500</td></tr>
+            <tr class="r-green"><td>HR</td><td>1</td><td>4500</td></tr>
+            <tr class="r-amber"><td>Finance</td><td>1</td><td>5500</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="code" style="margin-top:16px"><span class="kw">SELECT</span> dept,
+       <span class="kw">COUNT</span>(*) <span class="kw">AS</span> headcount,
+       <span class="kw">AVG</span>(salary) <span class="kw">AS</span> avg_salary
+<span class="kw">FROM</span> employees
+<span class="kw">GROUP BY</span> dept;</div>
+      <div class="tip"><strong>HAVING</strong> filters groups after grouping (WHERE can't do that):<br><code style="font-family:var(--mono);font-size:12px;color:var(--blue)">HAVING COUNT(*) &gt; 1</code> — only show depts with more than 1 employee.</div>
+    </div>
+  </div>
+ 
+  <div id="sec-joins" class="section">
+    <div class="card">
+      <div class="stitle">JOINs — combine two tables</div>
+      <div class="sdesc">JOINs link rows from two tables on a shared key. The three types differ in how they handle rows with no match.</div>
+      <div class="tbls">
+        <div class="tw">
+          <div class="tlabel">employees</div>
+          <table class="t">
+            <tr><th>id</th><th>name</th><th>dept_id</th></tr>
+            <tr><td>1</td><td>Alice</td><td>10</td></tr>
+            <tr><td>2</td><td>Bob</td><td>20</td></tr>
+            <tr><td>3</td><td>Carol</td><td>10</td></tr>
+            <tr><td>4</td><td>Dan</td><td class="null-val">NULL</td></tr>
+          </table>
+        </div>
+        <div class="tw">
+          <div class="tlabel">departments</div>
+          <table class="t">
+            <tr><th>dept_id</th><th>name</th></tr>
+            <tr><td>10</td><td>IT</td></tr>
+            <tr><td>20</td><td>HR</td></tr>
+            <tr><td>30</td><td>Finance</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="sub-nav" id="nav-joins">
+        <button class="snb active" data-target="jn-1">INNER JOIN</button>
+        <button class="snb" data-target="jn-2">LEFT JOIN</button>
+        <button class="snb" data-target="jn-3">RIGHT JOIN</button>
+      </div>
+      <div id="jn-1" class="subpanel active">
+        <div class="venn-row">
+          <svg width="80" height="56" viewBox="0 0 80 56"><circle cx="26" cy="28" r="20" fill="rgba(79,158,255,0.15)" stroke="rgba(79,158,255,0.3)" stroke-width="0.5"/><circle cx="54" cy="28" r="20" fill="rgba(52,211,153,0.15)" stroke="rgba(52,211,153,0.3)" stroke-width="0.5"/><ellipse cx="40" cy="28" rx="9" ry="17" fill="rgba(79,158,255,0.4)"/></svg>
+          <div class="vdesc"><strong>Only matched rows.</strong> If either side has no match, the row is dropped entirely.</div>
+        </div>
+        <div class="code"><span class="kw">SELECT</span> e.name, d.name <span class="kw">AS</span> dept
+<span class="kw">FROM</span> employees e
+<span class="kw">INNER JOIN</span> departments d
+  <span class="kw">ON</span> e.dept_id = d.dept_id;</div>
+        <div class="rlabel">Result:</div>
+        <table class="t" style="max-width:220px">
+          <tr><th>name</th><th>dept</th></tr>
+          <tr class="r-blue"><td>Alice</td><td>IT</td></tr>
+          <tr class="r-blue"><td>Bob</td><td>HR</td></tr>
+          <tr class="r-blue"><td>Carol</td><td>IT</td></tr>
+        </table>
+        <div class="tip">Dan (NULL dept_id) and Finance (no employees) are both <strong>excluded</strong>.</div>
+      </div>
+      <div id="jn-2" class="subpanel">
+        <div class="venn-row">
+          <svg width="80" height="56" viewBox="0 0 80 56"><circle cx="26" cy="28" r="20" fill="rgba(79,158,255,0.45)" stroke="rgba(79,158,255,0.5)" stroke-width="0.5"/><circle cx="54" cy="28" r="20" fill="rgba(52,211,153,0.08)" stroke="rgba(52,211,153,0.2)" stroke-width="0.5"/></svg>
+          <div class="vdesc"><strong>All rows from the LEFT table.</strong> No match on the right? Fill with NULL.</div>
+        </div>
+        <div class="code"><span class="kw">SELECT</span> e.name, d.name <span class="kw">AS</span> dept
+<span class="kw">FROM</span> employees e
+<span class="kw">LEFT JOIN</span> departments d
+  <span class="kw">ON</span> e.dept_id = d.dept_id;</div>
+        <div class="rlabel">Result:</div>
+        <table class="t" style="max-width:220px">
+          <tr><th>name</th><th>dept</th></tr>
+          <tr class="r-blue"><td>Alice</td><td>IT</td></tr>
+          <tr class="r-blue"><td>Bob</td><td>HR</td></tr>
+          <tr class="r-blue"><td>Carol</td><td>IT</td></tr>
+          <tr class="r-red"><td>Dan</td><td class="null-val">NULL</td></tr>
+        </table>
+        <div class="tip">Dan appears with NULL — no dept match. Finance is excluded (not in the left table).</div>
+      </div>
+      <div id="jn-3" class="subpanel">
+        <div class="venn-row">
+          <svg width="80" height="56" viewBox="0 0 80 56"><circle cx="26" cy="28" r="20" fill="rgba(79,158,255,0.08)" stroke="rgba(79,158,255,0.2)" stroke-width="0.5"/><circle cx="54" cy="28" r="20" fill="rgba(52,211,153,0.45)" stroke="rgba(52,211,153,0.5)" stroke-width="0.5"/></svg>
+          <div class="vdesc"><strong>All rows from the RIGHT table.</strong> No match on the left? Fill with NULL.</div>
+        </div>
+        <div class="code"><span class="kw">SELECT</span> e.name, d.name <span class="kw">AS</span> dept
+<span class="kw">FROM</span> employees e
+<span class="kw">RIGHT JOIN</span> departments d
+  <span class="kw">ON</span> e.dept_id = d.dept_id;</div>
+        <div class="rlabel">Result:</div>
+        <table class="t" style="max-width:220px">
+          <tr><th>name</th><th>dept</th></tr>
+          <tr class="r-green"><td>Alice</td><td>IT</td></tr>
+          <tr class="r-green"><td>Bob</td><td>HR</td></tr>
+          <tr class="r-green"><td>Carol</td><td>IT</td></tr>
+          <tr class="r-amber"><td class="null-val">NULL</td><td>Finance</td></tr>
+        </table>
+        <div class="tip">Finance appears with NULL — no employee match. Dan is excluded (his dept_id isn't in departments).</div>
+      </div>
+    </div>
+  </div>
+ 
+  <div id="sec-view" class="section">
+    <div class="card">
+      <div class="stitle">VIEW — a saved query with a name</div>
+      <div class="sdesc">A VIEW stores a SELECT statement under a name. It behaves like a table but holds no data — it reruns the query every time you use it.</div>
+      <div class="code"><span class="kw">CREATE VIEW</span> it_staff <span class="kw">AS</span>
+  <span class="kw">SELECT</span> name, salary
+  <span class="kw">FROM</span>   employees
+  <span class="kw">WHERE</span>  dept = 'IT';
+ 
+<span class="cmt">-- Use it exactly like a real table:</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> it_staff;
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> it_staff <span class="kw">WHERE</span> salary &gt; 5500;
+ 
+<span class="cmt">-- Remove it (data stays safe):</span>
+<span class="kw">DROP VIEW</span> it_staff;</div>
+      <div class="row">
+        <div class="tw">
+          <div class="tlabel">employees (real table)</div>
+          <table class="t">
+            <tr><th>name</th><th>dept</th><th>salary</th></tr>
+            <tr class="r-blue"><td>Alice</td><td>IT</td><td>5000</td></tr>
+            <tr class="r-dim"><td>Bob</td><td>HR</td><td>4500</td></tr>
+            <tr class="r-blue"><td>Carol</td><td>IT</td><td>6000</td></tr>
+            <tr class="r-dim"><td>Dan</td><td>Finance</td><td>5500</td></tr>
+          </table>
+        </div>
+        <div class="arr-mid">&#8594;</div>
+        <div class="tw">
+          <div class="tlabel blue">it_staff (view)</div>
+          <table class="t view-outline">
+            <tr><th>name</th><th>salary</th></tr>
+            <tr class="r-blue"><td>Alice</td><td>5000</td></tr>
+            <tr class="r-blue"><td>Carol</td><td>6000</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="tip" style="margin-top:16px">
+        <strong>When to use a VIEW:</strong><br>
+        <span style="display:block;margin-top:4px">Hide sensitive columns from certain users (e.g. salaries)</span>
+        <span style="display:block">Avoid repeating a long, complex JOIN every time</span>
+        <span style="display:block">Keep your SQL clean and reusable</span>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<footer>Made with Claude &mdash; sql_lesson.html</footer>
+ 
+<script>
+(function() {
+  function setupNav(navId, sectionScope) {
+    var nav = document.getElementById(navId);
+    if (!nav) return;
+    nav.addEventListener('click', function(e) {
+      var btn = e.target.closest('button[data-target]');
+      if (!btn || !nav.contains(btn)) return;
+      var target = btn.getAttribute('data-target');
+      nav.querySelectorAll('button').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      var scope = sectionScope ? document.getElementById(sectionScope) : document;
+      if (!scope) scope = document;
+      scope.querySelectorAll('.subpanel').forEach(function(p) { p.classList.remove('active'); });
+      var el = document.getElementById(target);
+      if (el) el.classList.add('active');
+    });
+  }
+ 
+  var topnav = document.getElementById('topnav');
+  if (topnav) {
+    topnav.addEventListener('click', function(e) {
+      var btn = e.target.closest('button[data-target]');
+      if (!btn) return;
+      var target = btn.getAttribute('data-target');
+      topnav.querySelectorAll('button').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      document.querySelectorAll('.section').forEach(function(s) { s.classList.remove('active'); });
+      var el = document.getElementById(target);
+      if (el) el.classList.add('active');
+    });
+  }
+ 
+  setupNav('nav-select', 'sec-select');
+  setupNav('nav-where', 'sec-where');
+  setupNav('nav-joins', 'sec-joins');
+})();
+</script>
+</body>
+</html>
